@@ -106,6 +106,7 @@ module.exports = function (webpackEnv) {
 
   // common function to get style loaders
   const getStyleLoaders = (cssOptions, preProcessor) => {
+    
     const loaders = [
       isEnvDevelopment && require.resolve('style-loader'),
       isEnvProduction && {
@@ -164,7 +165,11 @@ module.exports = function (webpackEnv) {
           },
           sourceMap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
         },
-      },
+      }/*
+      {
+        test: /\.css$/,
+        loader : 'style-loader!css-loader?localIdentName=[name]__[local]___[hash:base64:5]'
+      }*/
     ].filter(Boolean);
     if (preProcessor) {
       loaders.push(
@@ -473,18 +478,16 @@ module.exports = function (webpackEnv) {
               exclude: cssModuleRegex,
               use: getStyleLoaders({
                 importLoaders: 1,
-                sourceMap: isEnvProduction
-                  ? shouldUseSourceMap
-                  : isEnvDevelopment,
+                sourceMap: isEnvProduction && shouldUseSourceMap,
                 modules: {
-                  mode: 'icss',
-                },
+                    localIdentName: '[name]__[local]___[hash:base64:5]'
+                }
               }),
               // Don't consider CSS imports dead code even if the
               // containing package claims to have no side effects.
               // Remove this when webpack adds a warning or an error for this.
               // See https://github.com/webpack/webpack/issues/6571
-              sideEffects: true,
+              //sideEffects: true,
             },
             // Adds support for CSS Modules (https://github.com/css-modules/css-modules)
             // using the extension .module.css
